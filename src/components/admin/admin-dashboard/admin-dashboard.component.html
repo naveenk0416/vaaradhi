@@ -1,0 +1,69 @@
+
+<div class="p-6 md:p-8">
+  <h1 class="text-3xl font-bold text-slate-800 mb-6">Dashboard</h1>
+
+  <!-- Stat Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+      <div class="bg-primary-100 text-primary-600 rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.124-1.282-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.124-1.282.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm text-slate-500 font-medium">Total Profiles</p>
+        <p class="text-3xl font-bold text-slate-800">{{ totalProfiles() }}</p>
+      </div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+      <div class="bg-green-100 text-green-600 rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l1.414-1.414a1 1 0 011.414 0l1.414 1.414M2 11h20M12 21l-1-10" /></svg>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm text-slate-500 font-medium">NRI Profiles</p>
+        <p class="text-3xl font-bold text-slate-800">{{ nriProfiles() }}</p>
+      </div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+      <div class="bg-amber-100 text-amber-600 rounded-full p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm text-slate-500 font-medium">Profiles from India</p>
+        <p class="text-3xl font-bold text-slate-800">{{ indiaProfiles() }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Profiles -->
+  <div class="bg-white rounded-lg shadow-md">
+    <div class="p-6 border-b border-slate-200">
+      <h2 class="text-xl font-bold text-slate-800">Recently Added Profiles</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-slate-500">
+        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">Name</th>
+            <th scope="col" class="px-6 py-3">Location</th>
+            <th scope="col" class="px-6 py-3">Career</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (profile of recentProfiles(); track profile.id) {
+            <tr class="bg-white border-b hover:bg-slate-50">
+              <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap flex items-center">
+                <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-10 h-10 rounded-full object-cover mr-3">
+                {{ profile.name }}
+              </th>
+              <td class="px-6 py-4">{{ profile.city }}, {{ profile.country }}</td>
+              <td class="px-6 py-4">{{ profile.career }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="text-center p-6">No profiles found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,171 @@
+
+<main class="flex-grow flex flex-col p-4 md:p-6 overflow-y-auto">
+  <!-- Banner Carousel (Desktop Only) -->
+  <div class="hidden md:block relative w-full h-72 lg:h-96 rounded-2xl overflow-hidden shadow-lg mb-8 group/banner">
+    @for(banner of banners(); track banner.imageUrl; let i = $index) {
+      <div 
+        class="absolute inset-0 transition-opacity duration-1000 ease-in-out" 
+        [class.opacity-100]="i === currentBannerIndex()" 
+        [class.opacity-0]="i !== currentBannerIndex()">
+        <!-- Image -->
+        <img [src]="banner.imageUrl" [alt]="banner.title" class="w-full h-full object-cover">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-black/20"></div>
+        <!-- Content -->
+        <div class="absolute inset-0 flex flex-col justify-center p-12 lg:p-16 text-white">
+            <h2 class="text-3xl lg:text-5xl font-bold drop-shadow-lg">{{ banner.title }}</h2>
+            <p class="mt-2 text-base lg:text-lg max-w-lg drop-shadow-md">{{ banner.subtitle }}</p>
+        </div>
+      </div>
+    }
+    <!-- Navigation Arrows -->
+    <button (click)="previousBanner()" class="absolute top-1/2 left-4 -translate-y-1/2 bg-white/30 backdrop-blur-sm rounded-full p-2 text-white opacity-0 group-hover/banner:opacity-100 transition-opacity duration-300 hover:bg-white/50 z-10">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+    </button>
+    <button (click)="nextBanner()" class="absolute top-1/2 right-4 -translate-y-1/2 bg-white/30 backdrop-blur-sm rounded-full p-2 text-white opacity-0 group-hover/banner:opacity-100 transition-opacity duration-300 hover:bg-white/50 z-10">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </button>
+    <!-- Dot Indicators -->
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+      @for(banner of banners(); track banner.imageUrl; let i = $index) {
+        <button (click)="goToBanner(i)" class="w-2.5 h-2.5 rounded-full transition-colors duration-300" [class.bg-white]="i === currentBannerIndex()" [class.bg-white/50]="i !== currentBannerIndex()"></button>
+      }
+    </div>
+  </div>
+
+  <!-- Swiper Section -->
+  <div class="flex-shrink-0">
+    <h2 class="text-2xl font-bold text-slate-800 mb-4 px-2 md:px-0">Featured NRI Profiles</h2>
+
+    <!-- Mobile Swiper View -->
+    <div class="md:hidden">
+      @if (visibleProfiles().length > 0) {
+        <div class="relative w-full h-[65vh] max-h-[500px] mx-auto">
+          @for (profile of visibleProfiles(); track profile.id; let i = $index) {
+            @let isActive = (i === visibleProfiles().length - 1);
+            <app-profile-card 
+              [profile]="profile" 
+              [isActive]="isActive"
+              [action]="isActive ? action() : null"
+              [style.transform]="'translateY(' + (-i * 10) + 'px) scale(' + (1 - i * 0.05) + ')'"
+              [style.zIndex]="10 - i"
+              [class.opacity-0]="!isActive && i < visibleProfiles().length - 2"
+              class="absolute top-0 left-0 transition-all duration-300 ease-in-out w-full h-full"
+              />
+          }
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-center items-center gap-6 mt-6 w-full">
+          <button (click)="onAction('pass')" class="bg-white rounded-full p-5 shadow-xl text-yellow-500 hover:bg-yellow-100 transition-all duration-300 hover:scale-110">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <button (click)="onAction('like')" class="bg-white rounded-full p-7 shadow-xl text-red-600 hover:bg-red-100 transition-all duration-300 hover:scale-110">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <button (click)="onAction('pass')" class="bg-white rounded-full p-5 shadow-xl text-blue-500 hover:bg-blue-100 transition-all duration-300 hover:scale-110">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      } @else {
+        <div class="text-center text-slate-500 py-10 h-[65vh] max-h-[500px] flex flex-col justify-center items-center">
+          <p class="text-lg">No more featured profiles to show.</p>
+          <p class="text-sm">Check back later!</p>
+        </div>
+      }
+    </div>
+
+    <!-- Desktop Grid View -->
+    <div class="hidden md:block">
+      @if (featuredProfiles().length > 0) {
+          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              @for(profile of featuredProfiles(); track profile.id) {
+                  <div (click)="viewProfile(profile)" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden group transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                      <div class="relative h-64">
+                          <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover">
+                          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                          <div class="absolute bottom-0 left-0 p-4 text-white">
+                              <h3 class="font-bold text-xl">{{ profile.name }}, {{ profile.age }}</h3>
+                              <p class="text-sm">{{ profile.city }}, {{ profile.country }}</p>
+                          </div>
+                      </div>
+                      <div class="p-4">
+                          <p class="text-sm text-slate-600 line-clamp-2 h-10">{{ profile.bio }}</p>
+                          <div class="flex flex-wrap gap-2 mt-3">
+                              @for(interest of profile.interests.slice(0, 3); track interest) {
+                                  <span class="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded-full">{{ interest }}</span>
+                              }
+                          </div>
+                      </div>
+                  </div>
+              }
+          </div>
+      } @else {
+        <div class="text-center text-slate-500 py-10 h-auto flex flex-col justify-center items-center bg-slate-50 rounded-lg">
+          <p class="text-lg">No featured profiles to show.</p>
+          <p class="text-sm">Check back later!</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Profiles from India Section -->
+  <div class="mt-10 flex-shrink-0">
+    <h2 class="text-2xl font-bold text-slate-800 mb-4 px-2 md:px-0">Profiles from India</h2>
+    @if(profilesFromIndia().length > 0) {
+      <div class="relative group">
+        <div #indiaProfilesContainer (scroll)="checkScrollButtons()" class="flex overflow-x-auto space-x-4 pb-4 -mx-4 md:-mx-6 px-4 md:px-6 scrollbar-hide" style="scroll-snap-type: x mandatory;">
+          @for(profile of profilesFromIndia(); track profile.id) {
+            <div (click)="viewProfile(profile)" class="relative w-48 h-64 rounded-xl overflow-hidden shadow-lg flex-shrink-0 cursor-pointer group/card transition-all duration-300 hover:shadow-xl hover:shadow-primary-200/50" style="scroll-snap-align: start;">
+              <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 p-3 text-white w-full">
+                <div class="flex items-center">
+                  <p class="font-bold text-base truncate">{{ profile.name }}, {{ profile.age }}</p>
+                  @if(profile.verification.isIdVerified) {
+                    <svg title="ID Verified" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5 text-blue-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a.75.75 0 00-1.06-1.06L9 10.94l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clip-rule="evenodd" />
+                    </svg>
+                  }
+                </div>
+                <p class="text-xs text-slate-200">{{ profile.city }}</p>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Carousel Controls -->
+        @if (canScrollLeft()) {
+            <button (click)="scrollIndiaProfiles('left')" class="absolute top-1/2 left-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+        }
+        @if (canScrollRight()) {
+            <button (click)="scrollIndiaProfiles('right')" class="absolute top-1/2 right-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+            </button>
+        }
+      </div>
+    } @else {
+      <p class="text-slate-500 px-2 md:px-0">No profiles from India to show right now.</p>
+    }
+  </div>
+</main>
+
+<!-- Detailed Profile Overlay -->
+@if(selectedProfile(); as profile) {
+  <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <app-detailed-profile 
+      [profile]="profile"
+      [isLiked]="isSelectedProfileLiked()"
+      (close)="closeDetailedProfile()"
+      (interestSent)="onInterestSent(profile)">
+    </app-detailed-profile>
+  </div>
+}

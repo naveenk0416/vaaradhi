@@ -1,0 +1,49 @@
+
+<div class="p-6 md:p-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold text-slate-800">Manage Profiles</h1>
+    <a routerLink="/admin/profiles/new" class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+      Create Profile
+    </a>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-slate-500">
+        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">ID</th>
+            <th scope="col" class="px-6 py-3">Name</th>
+            <th scope="col" class="px-6 py-3">Age</th>
+            <th scope="col" class="px-6 py-3">Location</th>
+            <th scope="col" class="px-6 py-3">Career</th>
+            <th scope="col" class="px-6 py-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (profile of profiles(); track profile.id) {
+            <tr class="bg-white border-b hover:bg-slate-50">
+              <td class="px-6 py-4 font-mono text-xs">{{ profile.id }}</td>
+              <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap flex items-center">
+                <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-10 h-10 rounded-full object-cover mr-3">
+                {{ profile.name }}
+              </th>
+              <td class="px-6 py-4">{{ profile.age }}</td>
+              <td class="px-6 py-4">{{ profile.city }}, {{ profile.country }}</td>
+              <td class="px-6 py-4 truncate max-w-xs">{{ profile.career }}</td>
+              <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                <a [routerLink]="['/admin/profiles/edit', profile.id]" class="font-medium text-primary-600 hover:text-primary-800">Edit</a>
+                <button (click)="deleteProfile(profile)" class="font-medium text-red-600 hover:text-red-800">Delete</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center p-6">No profiles found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

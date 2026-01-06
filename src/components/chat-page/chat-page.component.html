@@ -1,0 +1,151 @@
+
+<div class="flex-grow flex h-full overflow-hidden bg-white">
+  <!-- Conversation List (Sidebar) -->
+  <aside 
+    class="w-full md:w-80 lg:w-96 h-full flex flex-col border-r border-slate-200 bg-white flex-shrink-0"
+    [class.hidden]="showMessagesViewOnMobile()"
+    [class.md:flex]="!showMessagesViewOnMobile()">
+    
+    <div class="p-4 border-b border-slate-200 flex-shrink-0">
+      <h1 class="text-2xl font-bold text-slate-800 mb-4">Matches</h1>
+      <div class="relative">
+        <input 
+          type="text" 
+          [formControl]="searchControl"
+          placeholder="Search matches..."
+          class="w-full rounded-full border-slate-200 bg-slate-50 pl-10 pr-4 py-2 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-1/2 left-3 -translate-y-1/2 h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      </div>
+    </div>
+
+    <div class="flex-grow overflow-y-auto">
+      @if (filteredConversations().length > 0) {
+        @for (profile of filteredConversations(); track profile.id) {
+          <button 
+            (click)="selectConversation(profile)" 
+            class="w-full text-left flex items-center p-4 transition-colors duration-200 border-l-4"
+            [class.bg-primary-50]="selectedConversation()?.id === profile.id"
+            [class.border-primary-500]="selectedConversation()?.id === profile.id"
+            [class.hover:bg-slate-50]="selectedConversation()?.id !== profile.id"
+            [class.border-transparent]="selectedConversation()?.id !== profile.id">
+            <div class="relative flex-shrink-0">
+              <img [ngSrc]="profile.imageUrls[0]" [alt]="profile.name" width="50" height="50" class="rounded-full object-cover">
+              <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-white"></span>
+            </div>
+            <div class="ml-4 flex-grow overflow-hidden">
+              <div class="flex items-center justify-between">
+                <p class="font-bold truncate" [class.text-primary-800]="selectedConversation()?.id === profile.id" [class.text-slate-800]="selectedConversation()?.id !== profile.id">{{ profile.name }}</p>
+                @if (unreadConversations().has(profile.id) && selectedConversation()?.id !== profile.id) {
+                  <span class="h-2.5 w-2.5 bg-primary-500 rounded-full flex-shrink-0"></span>
+                }
+              </div>
+              @if (typingContactId() === profile.id) {
+                <p class="text-sm font-medium animate-pulse" [class.text-primary-600]="selectedConversation()?.id === profile.id" [class.text-primary-600]="selectedConversation()?.id !== profile.id">typing...</p>
+              } @else {
+                <p class="text-sm truncate" [class.text-primary-700]="selectedConversation()?.id === profile.id" [class.text-slate-500]="selectedConversation()?.id !== profile.id">{{ getLastMessage(profile.id) }}</p>
+              }
+            </div>
+          </button>
+        }
+      } @else {
+        <div class="p-6 h-full flex flex-col items-center justify-center text-center text-slate-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <h3 class="text-lg font-semibold text-slate-700">No Matches Found</h3>
+            <p class="mt-1">Your search for "{{searchQuery()}}" did not return any results.</p>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- Message View -->
+  <main 
+    class="w-full flex-grow h-full flex flex-col bg-slate-50 overflow-hidden"
+    [class.hidden]="!showMessagesViewOnMobile()"
+    [class.md:flex]="true">
+    @if (selectedConversation(); as profile) {
+      <!-- Chat Header -->
+      <header class="flex items-center p-3 border-b border-slate-200 bg-white flex-shrink-0 z-10">
+        <button (click)="backToConversations()" class="md:hidden text-slate-600 mr-2 p-1 rounded-full hover:bg-slate-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <img [ngSrc]="profile.imageUrls[0]" [alt]="profile.name" width="44" height="44" class="rounded-full object-cover">
+        <div class="ml-3">
+            <h2 class="text-lg font-bold text-slate-800">{{ profile.name }}</h2>
+            <p class="text-xs text-slate-500">Active now</p>
+        </div>
+      </header>
+
+      <!-- Message Area -->
+      <div #messageContainer class="flex-grow p-4 md:p-6 overflow-y-auto">
+        <div class="space-y-2">
+          @for (message of messages(); track message.timestamp) {
+            <div 
+              class="flex items-end gap-2 animate-new-message" 
+              [class.justify-end]="message.senderId === currentUser().id">
+              <div class="flex flex-col" [class.items-end]="message.senderId === currentUser().id" [class.items-start]="message.senderId !== currentUser().id">
+                <div 
+                  class="max-w-xs lg:max-w-md p-3 px-4 rounded-2xl shadow-md"
+                  [class.bg-primary-600]="message.senderId === currentUser().id"
+                  [class.text-white]="message.senderId === currentUser().id"
+                  [class.rounded-br-lg]="message.senderId === currentUser().id"
+                  [class.bg-white]="message.senderId !== currentUser().id"
+                  [class.text-slate-800]="message.senderId !== currentUser().id"
+                  [class.rounded-bl-lg]="message.senderId !== currentUser().id">
+                  <p class="text-sm leading-relaxed">{{ message.text }}</p>
+                </div>
+                <p class="text-xs text-slate-400 mt-1.5 px-1">{{ message.timestamp | date:'shortTime' }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Message Input -->
+      <footer class="p-4 bg-white border-t border-slate-200 flex-shrink-0 z-10">
+        <form (ngSubmit)="sendMessage()" class="flex items-center space-x-3">
+          <input 
+            type="text" 
+            [formControl]="newMessage"
+            placeholder="Type your message here..."
+            class="flex-grow w-full rounded-full border-slate-200 bg-slate-50 px-5 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+          <button type="submit" [disabled]="newMessage.invalid" class="bg-primary-600 text-white rounded-full p-3 shadow-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+          </button>
+        </form>
+      </footer>
+    } @else {
+      <!-- Empty State -->
+      <div class="h-full hidden md:flex flex-col items-center justify-center text-center text-slate-500 p-8">
+        <div class="bg-white p-10 rounded-full shadow-sm border border-slate-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-primary-300" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+            </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-700 mt-6">Your Conversations</h2>
+        <p class="mt-2 max-w-sm text-slate-500">Select a match from the list to start chatting. A great conversation is the first step to a beautiful journey.</p>
+      </div>
+    }
+  </main>
+</div>
+
+<style>
+  @keyframes new-message-animation {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .animate-new-message {
+    animation: new-message-animation 0.3s ease-out forwards;
+  }
+</style>

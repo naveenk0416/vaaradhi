@@ -1,0 +1,135 @@
+
+<main class="flex-grow flex flex-col md:flex-row p-4 md:p-8 bg-slate-50 overflow-y-auto md:gap-8">
+  <!-- Filters Sidebar (Desktop) -->
+  <aside class="md:w-1/3 lg:w-1/4 xl:w-1/5 flex-shrink-0 mb-8 md:mb-0">
+    <div class="md:sticky md:top-8">
+      <!-- Header -->
+      <header class="mb-6">
+        <h1 class="text-3xl font-bold text-slate-800">Search Profiles</h1>
+        <p class="text-slate-500 mt-1">Find your perfect match with advanced filters.</p>
+      </header>
+      <!-- Filters Section -->
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <form [formGroup]="searchForm">
+          <div class="divide-y divide-slate-200">
+            <!-- Professional & Personal Info Section -->
+            <div class="py-4">
+              <button type="button" (click)="isProfessionalInfoOpen.set(!isProfessionalInfoOpen())" class="w-full flex justify-between items-center text-left text-lg font-semibold text-slate-800">
+                Professional & Personal
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" [class.rotate-180]="!isProfessionalInfoOpen()" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              @if(isProfessionalInfoOpen()) {
+                <div class="mt-4 space-y-4">
+                  <div>
+                    <label for="career" class="block text-sm font-medium text-slate-700">Career</label>
+                    <input type="text" id="career" formControlName="career" placeholder="e.g., Engineer, Doctor" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+                  </div>
+                  <div>
+                    <label for="education" class="block text-sm font-medium text-slate-700">Education</label>
+                    <input type="text" id="education" formControlName="education" placeholder="e.g., MS, MBA" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+                  </div>
+                  <div>
+                    <label for="interests" class="block text-sm font-medium text-slate-700">Interests</label>
+                    <input type="text" id="interests" formControlName="interests" placeholder="e.g., Hiking, Music" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+                    <p class="mt-1 text-xs text-slate-500">Separate with commas.</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Location & Relocation Section -->
+            <div class="py-4">
+              <button type="button" (click)="isLocationInfoOpen.set(!isLocationInfoOpen())" class="w-full flex justify-between items-center text-left text-lg font-semibold text-slate-800">
+                Location & Relocation
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" [class.rotate-180]="!isLocationInfoOpen()" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              @if(isLocationInfoOpen()) {
+                <div class="mt-4 space-y-4">
+                  <div class="flex items-center">
+                    <input type="checkbox" id="willingToRelocate" formControlName="willingToRelocate" class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                    <label for="willingToRelocate" class="ml-2 block text-sm font-medium text-slate-700">Willing to Relocate</label>
+                  </div>
+                  <div>
+                    <label for="preferredCountries" class="block text-sm font-medium text-slate-700">Preferred Countries</label>
+                    <input type="text" id="preferredCountries" formControlName="preferredCountries" placeholder="e.g., USA, Canada" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 disabled:bg-slate-50 disabled:cursor-not-allowed">
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          <!-- Actions -->
+          <div class="mt-6 text-right">
+            <button type="button" (click)="resetFilters()" class="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors duration-200">
+              Reset All
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Results Section -->
+  <div class="flex-1">
+    <h2 class="text-xl font-bold text-slate-700 mb-4">
+      {{ filteredProfiles().length }} {{ filteredProfiles().length === 1 ? 'Profile' : 'Profiles' }} Found
+    </h2>
+    @if (filteredProfiles().length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        @for (profile of filteredProfiles(); track profile.id) {
+          <div (click)="viewProfile(profile)" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden group transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+            <div class="relative h-56">
+              <img [ngSrc]="profile.imageUrls[0]" [alt]="profile.name" fill class="object-cover">
+              <div class="absolute top-2 right-2 flex items-center space-x-1">
+                @if (profile.verification?.isIdVerified) {
+                  <div title="ID Verified" class="bg-blue-500 text-white p-1.5 rounded-full shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a.75.75 0 00-1.06-1.06L9 10.94l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                }
+                @if (profile.verification?.isNriVerified) {
+                  <div title="NRI Verified" class="bg-green-500 text-white p-1.5 rounded-full shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3" />
+                    </svg>
+                  </div>
+                }
+                @if (profile.verification?.isProfilePictureVerified) {
+                  <div title="Photo Verified" class="bg-purple-500 text-white p-1.5 rounded-full shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2 6a2 2 0 012-2h1.586a1 1 0 01.707.293l1.414 1.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l1.414-1.414a1 1 0 01.707-.293H16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                      <path fill-rule="evenodd" d="M15 10a5 5 0 11-10 0 5 5 0 0110 0zm-5-3a3 3 0 100 6 3 3 0 000-6z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-lg text-slate-800 truncate">{{ profile.name }}, {{ profile.age }}</h3>
+              <p class="text-sm text-slate-500 truncate">{{ profile.career }}</p>
+              <p class="text-sm text-slate-500 mt-1 truncate">{{ profile.city }}, {{ profile.country }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="text-center py-16 px-6 bg-white rounded-lg shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        <h3 class="mt-2 text-lg font-medium text-slate-900">No Profiles Found</h3>
+        <p class="mt-1 text-sm text-slate-500">Try adjusting your search filters to find more results.</p>
+      </div>
+    }
+  </div>
+</main>
+
+<!-- Detailed Profile Overlay -->
+@if(selectedProfile(); as profile) {
+  <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <app-detailed-profile 
+      [profile]="profile" 
+      [isLiked]="isSelectedProfileLiked()"
+      (close)="closeDetailedProfile()"
+      (interestSent)="onInterestSent(profile)">
+    </app-detailed-profile>
+  </div>
+}

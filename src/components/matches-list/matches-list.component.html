@@ -1,0 +1,39 @@
+
+<div class="p-6 h-full flex flex-col">
+  <h2 class="text-xl font-bold text-slate-800 mb-4 flex-shrink-0">Your Matches</h2>
+  @if (profiles().length > 0) {
+    <div class="flex-grow overflow-y-auto -mr-6 pr-6 space-y-4">
+      @for (profile of profiles(); track profile.id) {
+        <button (click)="profileSelected.emit(profile)" class="w-full text-left flex items-center p-3 bg-slate-50 hover:bg-indigo-50 rounded-lg transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <img [ngSrc]="profile.imageUrls[0]" [alt]="profile.name" width="50" height="50" class="rounded-full object-cover">
+          <div class="ml-4 flex-grow">
+            <div class="flex items-center">
+              <p class="font-semibold text-slate-700">{{ profile.name }}, {{ profile.age }}</p>
+              <div class="flex items-center ml-1.5 space-x-1">
+                @if (profile.verification?.isIdVerified) {
+                  <svg title="ID Verified" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a.75.75 0 00-1.06-1.06L9 10.94l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clip-rule="evenodd" />
+                  </svg>
+                }
+                @if (profile.verification?.isNriVerified) {
+                  <svg title="NRI Verified" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3" />
+                  </svg>
+                }
+              </div>
+            </div>
+            <p class="text-sm text-slate-500">{{ profile.city }}, {{ profile.country }}</p>
+          </div>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="flex-grow flex flex-col items-center justify-center text-center text-slate-500 p-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      </svg>
+      <p class="font-medium">No matches yet</p>
+      <p class="text-sm">Profiles you 'like' will appear here.</p>
+    </div>
+  }
+</div>

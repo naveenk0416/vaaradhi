@@ -1,0 +1,43 @@
+
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-login-page',
+  templateUrl: './login-page.component.html',
+  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class LoginPageComponent {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  
+  isSubmitting = signal(false);
+  loginError = signal<string | null>(null);
+
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
+
+  async onSubmit(): Promise<void> {
+    if (this.loginForm.invalid) {
+      return;
+    }
+    
+    this.isSubmitting.set(true);
+    this.loginError.set(null);
+    
+    try {
+      const { email, password } = this.loginForm.value;
+      await this.authService.login(email!, password!);
+    } catch (error) {
+      this.loginError.set('Invalid email or password. Please try again.');
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
+}

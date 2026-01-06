@@ -1,0 +1,168 @@
+
+<div class="p-6 md:p-8">
+  <div class="flex items-center mb-6">
+    <a routerLink="/admin/profiles" class="text-slate-500 hover:text-slate-800 mr-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+    </a>
+    <h1 class="text-3xl font-bold text-slate-800">
+      @if (isEditMode()) {
+        Edit Profile
+      } @else {
+        Create New Profile
+      }
+    </h1>
+  </div>
+
+  <div class="bg-white p-6 md:p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+        
+        <!-- Basic Info -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Basic Info</h3>
+        <div class="lg:col-span-2">
+          <label for="name" class="block text-sm font-medium text-slate-700">Name</label>
+          <input type="text" id="name" formControlName="name" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="age" class="block text-sm font-medium text-slate-700">Age</label>
+          <input type="number" id="age" formControlName="age" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="height" class="block text-sm font-medium text-slate-700">Height (e.g., 5' 8")</label>
+          <input type="text" id="height" formControlName="height" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="maritalStatus" class="block text-sm font-medium text-slate-700">Marital Status</label>
+          <select id="maritalStatus" formControlName="maritalStatus" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            @for(status of maritalStatuses; track status) { <option [value]="status">{{ status }}</option> }
+          </select>
+        </div>
+        <div>
+          <label for="userCategory" class="block text-sm font-medium text-slate-700">User Category</label>
+          <select id="userCategory" formControlName="userCategory" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            @for(cat of userCategories; track cat) { <option [value]="cat">{{ cat }}</option> }
+          </select>
+        </div>
+
+        <!-- Birth Details -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Birth Details</h3>
+        <div>
+          <label for="dob" class="block text-sm font-medium text-slate-700">Date of Birth</label>
+          <input type="date" id="dob" formControlName="dob" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="placeOfBirth" class="block text-sm font-medium text-slate-700">Place of Birth</label>
+          <input type="text" id="placeOfBirth" formControlName="placeOfBirth" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="timeOfBirth" class="block text-sm font-medium text-slate-700">Time of Birth</label>
+          <input type="time" id="timeOfBirth" formControlName="timeOfBirth" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        
+        <!-- Cultural Info -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Cultural Info</h3>
+        <div>
+          <label for="religion" class="block text-sm font-medium text-slate-700">Religion</label>
+          <input type="text" id="religion" formControlName="religion" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="caste" class="block text-sm font-medium text-slate-700">Caste</label>
+          <input type="text" id="caste" formControlName="caste" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="motherTongue" class="block text-sm font-medium text-slate-700">Mother Tongue</label>
+          <input type="text" id="motherTongue" formControlName="motherTongue" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+
+        <!-- Location & Visa -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Location & Visa</h3>
+        <div>
+          <label for="city" class="block text-sm font-medium text-slate-700">City</label>
+          <input type="text" id="city" formControlName="city" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="country" class="block text-sm font-medium text-slate-700">Country</label>
+          <input type="text" id="country" formControlName="country" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div>
+          <label for="visaStatus" class="block text-sm font-medium text-slate-700">Visa Status</label>
+          <select id="visaStatus" formControlName="visaStatus" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+             @for(status of visaStatuses; track status) { <option [value]="status">{{ status }}</option> }
+          </select>
+        </div>
+
+        <!-- Professional -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Professional</h3>
+        <div class="lg:col-span-3">
+          <label for="career" class="block text-sm font-medium text-slate-700">Career</label>
+          <input type="text" id="career" formControlName="career" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div class="lg:col-span-3">
+          <label for="education" class="block text-sm font-medium text-slate-700">Education</label>
+          <input type="text" id="education" formControlName="education" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+
+        <!-- Other Details -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Other Details</h3>
+        <div class="lg:col-span-3">
+          <label for="bio" class="block text-sm font-medium text-slate-700">Bio</label>
+          <textarea id="bio" formControlName="bio" rows="4" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200"></textarea>
+        </div>
+        <div class="lg:col-span-3">
+          <label for="interests" class="block text-sm font-medium text-slate-700">Interests (comma-separated)</label>
+          <input type="text" id="interests" formControlName="interests" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div class="lg:col-span-3">
+          <label for="imageUrls" class="block text-sm font-medium text-slate-700">Image URLs (comma-separated)</label>
+          <input type="text" id="imageUrls" formControlName="imageUrls" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        
+        <!-- Preferences -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Preferences</h3>
+        <div class="lg:col-span-3">
+          <label for="preferredCountries" class="block text-sm font-medium text-slate-700">Preferred Countries (comma-separated)</label>
+          <input type="text" id="preferredCountries" formControlName="preferredCountries" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+        </div>
+        <div class="lg:col-span-3 flex items-center space-x-3">
+          <input id="willingToRelocate" formControlName="willingToRelocate" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+          <label for="willingToRelocate" class="text-sm font-medium text-slate-700">Willing to Relocate</label>
+        </div>
+
+        <!-- Verification -->
+        <h3 class="lg:col-span-3 text-lg font-semibold text-slate-800 border-b pb-2 mt-4">Verification Status</h3>
+        <div class="flex items-center space-x-3">
+          <input id="isIdVerified" formControlName="isIdVerified" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+          <label for="isIdVerified" class="text-sm font-medium text-slate-700">ID Verified</label>
+        </div>
+        <div class="flex items-center space-x-3">
+          <input id="isNriVerified" formControlName="isNriVerified" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+          <label for="isNriVerified" class="text-sm font-medium text-slate-700">NRI Verified</label>
+        </div>
+        <div class="flex items-center space-x-3">
+          <input id="isProfilePictureVerified" formControlName="isProfilePictureVerified" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+          <label for="isProfilePictureVerified" class="text-sm font-medium text-slate-700">Photo Verified</label>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-8 pt-6 border-t border-slate-200 flex justify-end space-x-4">
+        <a routerLink="/admin/profiles" class="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors duration-200">
+          Cancel
+        </a>
+        <button type="submit" [disabled]="profileForm.invalid || isSaving()" class="inline-flex justify-center items-center rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+          @if (isSaving()) {
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Saving...</span>
+          } @else {
+            <span>
+              @if (isEditMode()) { Save Changes } @else { Create Profile }
+            </span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
