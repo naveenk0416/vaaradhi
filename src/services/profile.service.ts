@@ -11,6 +11,8 @@ export class ProfileService {
     {
       id: 6,
       name: 'Aditya',
+      email: 'aditya.rao@example.com',
+      phone: '+1 (123) 456-7890',
       age: 30,
       imageUrls: ['https://picsum.photos/seed/boy3/600/800', 'https://picsum.photos/seed/boy3a/600/800', 'https://picsum.photos/seed/boy3b/600/800'],
       city: 'New York',
@@ -40,6 +42,8 @@ export class ProfileService {
     {
       id: 1,
       name: 'Ananya',
+      email: 'ananya.k@example.com',
+      phone: '+1 (987) 654-3210',
       age: 28,
       imageUrls: ['https://picsum.photos/seed/girl1/600/800', 'https://picsum.photos/seed/girl1a/600/800', 'https://picsum.photos/seed/girl1b/600/800'],
       city: 'San Francisco',
@@ -69,6 +73,8 @@ export class ProfileService {
     {
       id: 2,
       name: 'Rohan',
+      email: 'rohan.patel@example.co.uk',
+      phone: '+44 20 7946 0958',
       age: 31,
       imageUrls: ['https://picsum.photos/seed/boy1/600/800', 'https://picsum.photos/seed/boy1a/600/800', 'https://picsum.photos/seed/boy1b/600/800', 'https://picsum.photos/seed/boy1c/600/800'],
       city: 'London',
@@ -98,6 +104,8 @@ export class ProfileService {
     {
       id: 3,
       name: 'Priya',
+      email: 'priya.singh@example.ca',
+      phone: '+1 (416) 555-0123',
       age: 26,
       imageUrls: ['https://picsum.photos/seed/girl2/600/800', 'https://picsum.photos/seed/girl2a/600/800'],
       city: 'Toronto',
@@ -127,6 +135,8 @@ export class ProfileService {
     {
       id: 4,
       name: 'Vikram',
+      email: 'vikram.reddy@example.com',
+      phone: '+1 (214) 555-0199',
       age: 33,
       imageUrls: ['https://picsum.photos/seed/boy2/600/800', 'https://picsum.photos/seed/boy2a/600/800', 'https://picsum.photos/seed/boy2b/600/800'],
       city: 'Dallas',
@@ -156,6 +166,8 @@ export class ProfileService {
     {
       id: 5,
       name: 'Sneha',
+      email: 'sneha.jain@example.com.au',
+      phone: '+61 2 9999 8888',
       age: 29,
       imageUrls: ['https://picsum.photos/seed/girl3/600/800', 'https://picsum.photos/seed/girl3a/600/800', 'https://picsum.photos/seed/girl3b/600/800'],
       city: 'Sydney',
@@ -185,6 +197,8 @@ export class ProfileService {
     {
       id: 7,
       name: 'Kavya',
+      email: 'kavya.gupta@example.in',
+      phone: '+91 22 2345 6789',
       age: 27,
       imageUrls: ['https://picsum.photos/seed/girl4/600/800', 'https://picsum.photos/seed/girl4a/600/800'],
       city: 'Mumbai',
@@ -214,6 +228,8 @@ export class ProfileService {
     {
       id: 8,
       name: 'Arjun',
+      email: 'arjun.menon@example.in',
+      phone: '+91 80 4567 8901',
       age: 29,
       imageUrls: ['https://picsum.photos/seed/boy4/600/800', 'https://picsum.photos/seed/boy4a/600/800', 'https://picsum.photos/seed/boy4b/600/800'],
       city: 'Bangalore',
@@ -243,6 +259,8 @@ export class ProfileService {
     {
       id: 9,
       name: 'Riya Sharma',
+      email: 'riya.sharma@example.in',
+      phone: '+91 11 3456 7890',
       age: 25,
       imageUrls: ['https://picsum.photos/seed/girl5/600/800', 'https://picsum.photos/seed/girl5a/600/800', 'https://picsum.photos/seed/girl5b/600/800'],
       city: 'Delhi',
@@ -272,6 +290,8 @@ export class ProfileService {
     {
       id: 10,
       name: 'Sameer Khan',
+      email: 'sameer.khan@example.in',
+      phone: '+91 40 5678 9012',
       age: 32,
       imageUrls: ['https://picsum.photos/seed/boy5/600/800'],
       city: 'Hyderabad',
@@ -301,6 +321,8 @@ export class ProfileService {
     {
       id: 11,
       name: 'Pooja Patel',
+      email: 'pooja.patel@example.in',
+      phone: '+91 79 6789 0123',
       age: 28,
       imageUrls: ['https://picsum.photos/seed/girl6/600/800', 'https://picsum.photos/seed/girl6a/600/800', 'https://picsum.photos/seed/girl6b/600/800'],
       city: 'Ahmedabad',

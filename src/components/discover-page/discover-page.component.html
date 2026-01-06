@@ -1,12 +1,16 @@
 
 <main class="flex-grow flex flex-col p-4 md:p-6 overflow-y-auto">
   <!-- Banner Carousel (Desktop Only) -->
-  <div class="hidden md:block relative w-full h-72 lg:h-96 rounded-2xl overflow-hidden shadow-lg mb-8 group/banner">
+  <div 
+    class="hidden md:block relative w-full h-72 lg:h-96 rounded-2xl overflow-hidden shadow-lg mb-8 group/banner"
+    (mouseenter)="stopAutoplay()" (mouseleave)="startAutoplay()" 
+    (focusin)="stopAutoplay()" (focusout)="startAutoplay()"
+    role="region" aria-roledescription="carousel" aria-label="Promotional Banners">
     @for(banner of banners(); track banner.imageUrl; let i = $index) {
       <div 
-        class="absolute inset-0 transition-opacity duration-1000 ease-in-out" 
-        [class.opacity-100]="i === currentBannerIndex()" 
-        [class.opacity-0]="i !== currentBannerIndex()">
+        class="absolute inset-0 transition-transform duration-700 ease-in-out" 
+        [style.transform]="'translateX(' + ((i - currentBannerIndex()) * 100) + '%)'"
+        role="group" aria-roledescription="slide" [attr.aria-label]="(i + 1) + ' of ' + banners().length">
         <!-- Image -->
         <img [src]="banner.imageUrl" [alt]="banner.title" class="w-full h-full object-cover">
         <!-- Overlay -->
@@ -19,16 +23,16 @@
       </div>
     }
     <!-- Navigation Arrows -->
-    <button (click)="previousBanner()" class="absolute top-1/2 left-4 -translate-y-1/2 bg-white/30 backdrop-blur-sm rounded-full p-2 text-white opacity-0 group-hover/banner:opacity-100 transition-opacity duration-300 hover:bg-white/50 z-10">
+    <button (click)="previousBanner()" aria-label="Previous slide" class="absolute top-1/2 left-4 -translate-y-1/2 bg-white/30 backdrop-blur-sm rounded-full p-2 text-white opacity-0 group-hover/banner:opacity-100 transition-opacity duration-300 hover:bg-white/50 z-10">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
     </button>
-    <button (click)="nextBanner()" class="absolute top-1/2 right-4 -translate-y-1/2 bg-white/30 backdrop-blur-sm rounded-full p-2 text-white opacity-0 group-hover/banner:opacity-100 transition-opacity duration-300 hover:bg-white/50 z-10">
+    <button (click)="nextBanner()" aria-label="Next slide" class="absolute top-1/2 right-4 -translate-y-1/2 bg-white/30 backdrop-blur-sm rounded-full p-2 text-white opacity-0 group-hover/banner:opacity-100 transition-opacity duration-300 hover:bg-white/50 z-10">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </button>
     <!-- Dot Indicators -->
-    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10" role="tablist" aria-label="Slide navigation">
       @for(banner of banners(); track banner.imageUrl; let i = $index) {
-        <button (click)="goToBanner(i)" class="w-2.5 h-2.5 rounded-full transition-colors duration-300" [class.bg-white]="i === currentBannerIndex()" [class.bg-white/50]="i !== currentBannerIndex()"></button>
+        <button (click)="goToBanner(i)" role="tab" [attr.aria-selected]="i === currentBannerIndex()" [attr.aria-label]="'Go to slide ' + (i + 1)" class="w-2.5 h-2.5 rounded-full transition-colors duration-300" [class.bg-white]="i === currentBannerIndex()" [class.bg-white/50]="i !== currentBannerIndex()"></button>
       }
     </div>
   </div>
@@ -123,42 +127,44 @@
 
   <!-- Profiles from India Section -->
   <div class="mt-10 flex-shrink-0">
-    <h2 class="text-2xl font-bold text-slate-800 mb-4 px-2 md:px-0">Profiles from India</h2>
+    <h2 id="profiles-from-india-heading" class="text-2xl font-bold text-slate-800 mb-4 px-2 md:px-0">Profiles from India</h2>
     @if(profilesFromIndia().length > 0) {
-      <div class="relative group">
-        <div #indiaProfilesContainer (scroll)="checkScrollButtons()" class="flex overflow-x-auto space-x-4 pb-4 -mx-4 md:-mx-6 px-4 md:px-6 scrollbar-hide" style="scroll-snap-type: x mandatory;">
+      <div class="relative group" role="region" aria-labelledby="profiles-from-india-heading">
+        <ul #indiaProfilesContainer (scroll)="checkScrollButtons()" class="flex overflow-x-auto space-x-4 pb-4 -mx-4 md:-mx-6 px-4 md:px-6 scrollbar-hide" style="scroll-snap-type: x mandatory;">
           @for(profile of profilesFromIndia(); track profile.id) {
-            <div (click)="viewProfile(profile)" class="relative w-48 h-64 rounded-xl overflow-hidden shadow-lg flex-shrink-0 cursor-pointer group/card transition-all duration-300 hover:shadow-xl hover:shadow-primary-200/50" style="scroll-snap-align: start;">
-              <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-               @if(kundaliScores().get(profile.id); as match) {
-                <div class="absolute top-2 left-2">
-                  <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+            <li class="flex-shrink-0" style="scroll-snap-align: start;">
+              <div (click)="viewProfile(profile)" class="relative w-48 h-64 rounded-xl overflow-hidden shadow-lg cursor-pointer group/card transition-all duration-300 hover:shadow-xl hover:shadow-primary-200/50">
+                <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                 @if(kundaliScores().get(profile.id); as match) {
+                  <div class="absolute top-2 left-2">
+                    <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+                  </div>
+                 }
+                <div class="absolute bottom-0 left-0 p-3 text-white w-full">
+                  <div class="flex items-center">
+                    <p class="font-bold text-base truncate">{{ profile.name }}, {{ profile.age }}</p>
+                    @if(profile.verification.isIdVerified) {
+                      <svg title="ID Verified" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5 text-blue-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a.75.75 0 00-1.06-1.06L9 10.94l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clip-rule="evenodd" />
+                      </svg>
+                    }
+                  </div>
+                  <p class="text-xs text-slate-200">{{ profile.city }}</p>
                 </div>
-               }
-              <div class="absolute bottom-0 left-0 p-3 text-white w-full">
-                <div class="flex items-center">
-                  <p class="font-bold text-base truncate">{{ profile.name }}, {{ profile.age }}</p>
-                  @if(profile.verification.isIdVerified) {
-                    <svg title="ID Verified" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5 text-blue-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a.75.75 0 00-1.06-1.06L9 10.94l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clip-rule="evenodd" />
-                    </svg>
-                  }
-                </div>
-                <p class="text-xs text-slate-200">{{ profile.city }}</p>
               </div>
-            </div>
+            </li>
           }
-        </div>
+        </ul>
 
         <!-- Carousel Controls -->
         @if (canScrollLeft()) {
-            <button (click)="scrollIndiaProfiles('left')" class="absolute top-1/2 left-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+            <button (click)="scrollIndiaProfiles('left')" aria-label="Scroll to previous profiles" class="absolute top-1/2 left-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
         }
         @if (canScrollRight()) {
-            <button (click)="scrollIndiaProfiles('right')" class="absolute top-1/2 right-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+            <button (click)="scrollIndiaProfiles('right')" aria-label="Scroll to next profiles" class="absolute top-1/2 right-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
             </button>
         }

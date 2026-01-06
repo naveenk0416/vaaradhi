@@ -32,6 +32,8 @@ export class AdminProfileFormComponent implements OnInit {
   ngOnInit(): void {
     this.profileForm = this.fb.group({
       name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
       age: [null, [Validators.required, Validators.min(18)]],
       height: ['', Validators.required],
       maritalStatus: ['Never Married', Validators.required],
@@ -74,6 +76,8 @@ export class AdminProfileFormComponent implements OnInit {
   private populateForm(profile: Profile): void {
     this.profileForm.patchValue({
       name: profile.name,
+      email: profile.email,
+      phone: profile.phone,
       age: profile.age,
       height: profile.height,
       maritalStatus: profile.maritalStatus,
@@ -117,6 +121,8 @@ export class AdminProfileFormComponent implements OnInit {
 
     const profileData: Omit<Profile, 'id'> = {
       name: formValue.name,
+      email: formValue.email,
+      phone: formValue.phone,
       age: formValue.age,
       imageUrls: formValue.imageUrls.split(',').map((url: string) => url.trim()).filter(Boolean),
       city: formValue.city,

@@ -6,6 +6,8 @@ export type UserCategory = 'INDIA' | 'NRI';
 export interface Profile {
   id: number;
   name: string;
+  email: string;
+  phone: string;
   age: number;
   imageUrls: string[];
   city: string;
