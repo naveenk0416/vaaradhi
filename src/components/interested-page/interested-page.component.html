@@ -13,6 +13,11 @@
         <div (click)="viewProfile(profile)" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden group transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
           <div class="relative h-56">
             <img [ngSrc]="profile.imageUrls[0]" [alt]="profile.name" fill class="object-cover">
+             @if(kundaliScores().get(profile.id); as match) {
+              <div class="absolute top-3 left-3 bg-black/20 backdrop-blur-sm rounded-full">
+                <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+              </div>
+             }
             <div class="absolute top-2 right-2 flex items-center space-x-1">
               @if (profile.verification?.isIdVerified) {
                 <div title="ID Verified" class="bg-blue-500 text-white p-1.5 rounded-full shadow">

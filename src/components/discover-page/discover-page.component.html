@@ -47,6 +47,7 @@
               [profile]="profile" 
               [isActive]="isActive"
               [action]="isActive ? action() : null"
+              [kundaliMatch]="kundaliScores().get(profile.id)"
               [style.transform]="'translateY(' + (-i * 10) + 'px) scale(' + (1 - i * 0.05) + ')'"
               [style.zIndex]="10 - i"
               [class.opacity-0]="!isActive && i < visibleProfiles().length - 2"
@@ -90,6 +91,11 @@
                       <div class="relative h-64">
                           <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover">
                           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                           @if(kundaliScores().get(profile.id); as match) {
+                            <div class="absolute top-3 left-3">
+                              <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+                            </div>
+                           }
                           <div class="absolute bottom-0 left-0 p-4 text-white">
                               <h3 class="font-bold text-xl">{{ profile.name }}, {{ profile.age }}</h3>
                               <p class="text-sm">{{ profile.city }}, {{ profile.country }}</p>
@@ -125,6 +131,11 @@
             <div (click)="viewProfile(profile)" class="relative w-48 h-64 rounded-xl overflow-hidden shadow-lg flex-shrink-0 cursor-pointer group/card transition-all duration-300 hover:shadow-xl hover:shadow-primary-200/50" style="scroll-snap-align: start;">
               <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300">
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+               @if(kundaliScores().get(profile.id); as match) {
+                <div class="absolute top-2 left-2">
+                  <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+                </div>
+               }
               <div class="absolute bottom-0 left-0 p-3 text-white w-full">
                 <div class="flex items-center">
                   <p class="font-bold text-base truncate">{{ profile.name }}, {{ profile.age }}</p>

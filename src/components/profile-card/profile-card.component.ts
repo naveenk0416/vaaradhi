@@ -2,11 +2,13 @@
 import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Profile } from '../../models/profile.model';
+import { KundaliMatch } from '../../services/kundali.service';
+import { KundaliScoreComponent } from '../kundali-score/kundali-score.component';
 
 @Component({
   selector: 'app-profile-card',
   templateUrl: './profile-card.component.html',
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [CommonModule, NgOptimizedImage, KundaliScoreComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileCardComponent {
@@ -15,6 +17,7 @@ export class ProfileCardComponent {
   action = input<'like' | 'pass' | null>();
   showEditButton = input<boolean>(false);
   isLiked = input<boolean>(false);
+  kundaliMatch = input<KundaliMatch | null | undefined>();
   editProfile = output();
 
   currentImageIndex = signal(0);

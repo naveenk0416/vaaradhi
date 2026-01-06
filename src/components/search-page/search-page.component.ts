@@ -1,11 +1,13 @@
 
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed, effect } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../services/notification.service';
+import { KundaliService, KundaliMatch } from '../../services/kundali.service';
 import { Profile } from '../../models/profile.model';
 import { DetailedProfileComponent } from '../detailed-profile/detailed-profile.component';
+import { KundaliScoreComponent } from '../kundali-score/kundali-score.component';
 
 @Component({
   selector: 'app-search-page',
@@ -14,18 +16,21 @@ import { DetailedProfileComponent } from '../detailed-profile/detailed-profile.c
     CommonModule, 
     NgOptimizedImage,
     ReactiveFormsModule, 
-    DetailedProfileComponent
+    DetailedProfileComponent,
+    KundaliScoreComponent
   ],
 })
 export class SearchPageComponent implements OnInit {
   private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private notificationService = inject(NotificationService);
+  private kundaliService = inject(KundaliService);
 
   searchForm!: FormGroup;
   isProfessionalInfoOpen = signal(true);
   isLocationInfoOpen = signal(true);
   
+  private currentUser = this.profileService.currentUser;
   private allSearchableProfiles = computed(() => {
     const all = this.profileService.discoverableProfiles().concat(this.profileService.likedProfiles());
     // Remove duplicates
@@ -35,11 +40,39 @@ export class SearchPageComponent implements OnInit {
   filteredProfiles = signal<Profile[]>([]);
   selectedProfile = signal<Profile | null>(null);
 
+  // --- Kundali Match Scores ---
+  kundaliScores = signal<Map<number, KundaliMatch>>(new Map());
+  isLoadingScores = signal(true);
+
   isSelectedProfileLiked = computed(() => {
     const selected = this.selectedProfile();
     if (!selected) return false;
     return this.profileService.likedProfiles().some(p => p.id === selected.id);
   });
+
+  constructor() {
+    // Calculate Kundali scores when filtered profiles change
+    effect(async () => {
+      this.isLoadingScores.set(true);
+      const user = this.currentUser();
+      const profilesToScore = this.filteredProfiles();
+      
+      const scorePromises = profilesToScore.map(p => 
+          this.kundaliService.getMatchScore(user, p).then(score => ({ id: p.id, score }))
+      );
+      
+      const scores = await Promise.all(scorePromises);
+      
+      this.kundaliScores.update(currentScores => {
+          const newScores = new Map(); // Create new map to ensure we only have scores for filtered profiles
+          scores.forEach(item => {
+              newScores.set(item.id, item.score);
+          });
+          return newScores;
+      });
+      this.isLoadingScores.set(false);
+    }, { allowSignalWrites: true });
+  }
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({
@@ -50,7 +83,7 @@ export class SearchPageComponent implements OnInit {
       preferredCountries: [{ value: '', disabled: true }],
     });
 
-    this.filteredProfiles.set(this.allSearchableProfiles());
+    this.applyFilters(); // Initial application
 
     this.searchForm.get('willingToRelocate')?.valueChanges.subscribe(value => {
       const preferredCountriesControl = this.searchForm.get('preferredCountries');

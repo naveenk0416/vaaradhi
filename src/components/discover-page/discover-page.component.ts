@@ -4,8 +4,10 @@ import { CommonModule } from '@angular/common';
 import { Profile } from '../../models/profile.model';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../services/notification.service';
+import { KundaliService, KundaliMatch } from '../../services/kundali.service';
 import { ProfileCardComponent } from '../profile-card/profile-card.component';
 import { DetailedProfileComponent } from '../detailed-profile/detailed-profile.component';
+import { KundaliScoreComponent } from '../kundali-score/kundali-score.component';
 
 interface Banner {
   imageUrl: string;
@@ -16,16 +18,22 @@ interface Banner {
 @Component({
   selector: 'app-discover-page',
   templateUrl: './discover-page.component.html',
-  imports: [CommonModule, ProfileCardComponent, DetailedProfileComponent],
+  imports: [CommonModule, ProfileCardComponent, DetailedProfileComponent, KundaliScoreComponent],
 })
 export class DiscoverPageComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
   private notificationService = inject(NotificationService);
+  private kundaliService = inject(KundaliService);
 
   private profiles = this.profileService.discoverableProfiles;
+  private currentUser = this.profileService.currentUser;
   currentIndex = signal(0);
   action = signal<'like' | 'pass' | null>(null);
   selectedProfile = signal<Profile | null>(null);
+
+  // --- Kundali Match Scores ---
+  kundaliScores = signal<Map<number, KundaliMatch>>(new Map());
+  isLoadingScores = signal(true);
 
   // --- Banner Carousel State ---
   banners = signal<Banner[]>([
@@ -78,6 +86,28 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
           setTimeout(() => this.checkScrollButtons(), 100);
       }
     });
+
+    // Calculate Kundali scores when profiles or user change
+    effect(async () => {
+      this.isLoadingScores.set(true);
+      const user = this.currentUser();
+      const profilesToScore = this.profiles();
+      
+      const scorePromises = profilesToScore.map(p => 
+          this.kundaliService.getMatchScore(user, p).then(score => ({ id: p.id, score }))
+      );
+      
+      const scores = await Promise.all(scorePromises);
+      
+      this.kundaliScores.update(currentScores => {
+          const newScores = new Map(currentScores);
+          scores.forEach(item => {
+              newScores.set(item.id, item.score);
+          });
+          return newScores;
+      });
+      this.isLoadingScores.set(false);
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
