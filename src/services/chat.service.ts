@@ -14,17 +14,7 @@ export class ChatService {
 
   typingContactId = signal<number | null>(null);
 
-  constructor() {
-    // When liked profiles change, initialize conversations
-    effect(() => {
-      const liked = this.profileService.likedProfiles();
-      liked.forEach(profile => {
-        this.initializeConversation(profile.id);
-      });
-    });
-  }
-
-  private initializeConversation(profileId: number): void {
+  initializeConversation(profileId: number): void {
     this.conversations.update(convos => {
       if (!convos.has(profileId)) {
         // Create a new conversation with a welcome message

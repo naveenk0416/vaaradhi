@@ -52,6 +52,13 @@ export class ChatPageComponent {
   messageContainer = viewChild<ElementRef<HTMLDivElement>>('messageContainer');
 
   constructor() {
+    // Initialize all conversations with a welcome message if they are new.
+    effect(() => {
+      this.conversations().forEach(profile => {
+        this.chatService.initializeConversation(profile.id);
+      });
+    });
+
     // Update search query signal when search control changes
     this.searchControl.valueChanges.pipe(
       startWith('')
