@@ -40,4 +40,16 @@ export class LoginPageComponent {
       this.isSubmitting.set(false);
     }
   }
+
+  async handleGoogleSignIn(): Promise<void> {
+    this.isSubmitting.set(true);
+    this.loginError.set(null);
+    try {
+      await this.authService.signInWithGoogle();
+    } catch (error) {
+      this.loginError.set('Could not sign in with Google. Please try again.');
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
 }

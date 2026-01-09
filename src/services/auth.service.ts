@@ -1,12 +1,14 @@
 
 import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { GoogleAuthService } from './google-auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private router = inject(Router);
+  private googleAuthService = inject(GoogleAuthService);
   isLoggedIn = signal<boolean>(false);
 
   login(email: string, password: string): Promise<void> {
@@ -39,6 +41,12 @@ export class AuthService {
         resolve();
       }, 1000);
     });
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    await this.googleAuthService.signIn();
+    this.isLoggedIn.set(true);
+    this.router.navigate(['/discover']);
   }
 
   logout(): void {
