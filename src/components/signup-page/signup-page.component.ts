@@ -1,7 +1,7 @@
 
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
@@ -27,6 +27,8 @@ export function passwordsMatchValidator(control: AbstractControl): ValidationErr
 export class SignupPageComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private router = inject(Router);
+
   
   isSubmitting = signal(false);
   signupError = signal<string | null>(null);
@@ -54,6 +56,11 @@ export class SignupPageComponent {
       this.signupError.set('Could not create account. Please try again.');
     } finally {
       this.isSubmitting.set(false);
+      this.router.navigate(['login'])
+      
     }
   }
+
+
 }
+

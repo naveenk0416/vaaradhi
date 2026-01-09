@@ -93,19 +93,19 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
       const user = this.currentUser();
       const profilesToScore = this.profiles();
       
-      const scorePromises = profilesToScore.map(p => 
-          this.kundaliService.getMatchScore(user, p).then(score => ({ id: p.id, score }))
-      );
+      // const scorePromises = profilesToScore.map(p => 
+      //     this.kundaliService.getMatchScore(user, p).then(score => ({ id: p.id, score }))
+      // );
       
-      const scores = await Promise.all(scorePromises);
+      // const scores = await Promise.all(scorePromises);
       
-      this.kundaliScores.update(currentScores => {
-          const newScores = new Map(currentScores);
-          scores.forEach(item => {
-              newScores.set(item.id, item.score);
-          });
-          return newScores;
-      });
+      // this.kundaliScores.update(currentScores => {
+      //     const newScores = new Map(currentScores);
+      //     scores.forEach(item => {
+      //         newScores.set(item.id, item.score);
+      //     });
+      //     return newScores;
+      // });
       this.isLoadingScores.set(false);
     }, { allowSignalWrites: true });
   }
@@ -134,19 +134,19 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
     this.resetAutoplay();
   }
 
-  private startAutoplay(): void {
+  public startAutoplay(): void {
     this.autoplayInterval = setInterval(() => {
       this.currentBannerIndex.update(i => (i + 1) % this.banners().length);
     }, 5000);
   }
 
-  private stopAutoplay(): void {
+  public stopAutoplay(): void {
     if (this.autoplayInterval) {
       clearInterval(this.autoplayInterval);
     }
   }
 
-  private resetAutoplay(): void {
+  public resetAutoplay(): void {
     this.stopAutoplay();
     this.startAutoplay();
   }

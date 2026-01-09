@@ -1,7 +1,7 @@
 
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
@@ -14,6 +14,8 @@ import { AuthService } from '../../services/auth.service';
 export class LoginPageComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+    private router = inject(Router);
+
   
   isSubmitting = signal(false);
   loginError = signal<string | null>(null);
@@ -38,6 +40,7 @@ export class LoginPageComponent {
       this.loginError.set('Invalid email or password. Please try again.');
     } finally {
       this.isSubmitting.set(false);
-    }
+      this.router.navigate(['discover'])
+  }
   }
 }

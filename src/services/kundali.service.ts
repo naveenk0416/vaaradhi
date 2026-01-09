@@ -18,7 +18,7 @@ export class KundaliService {
   constructor() {
     // IMPORTANT: You must have your API key set in the environment.
     // In a real application, this would be handled server-side for security.
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+    this.ai = new GoogleGenAI({ apiKey: 'AIzaSyBYHybwR5zDGQOyWZbls7kfYlmA8-40210' });
   }
 
   async getMatchScore(userProfile: Profile, otherProfile: Profile): Promise<KundaliMatch> {
