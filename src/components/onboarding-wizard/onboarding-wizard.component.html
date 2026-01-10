@@ -1,0 +1,165 @@
+
+<div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col relative animate-fade-in-up max-h-[90vh]">
+    <!-- Header -->
+    <header class="p-6 border-b border-slate-200 flex-shrink-0">
+      <h2 class="text-2xl font-bold text-slate-800">Complete Your Profile</h2>
+      <p class="text-slate-500">More details increase your chances of finding a great match.</p>
+      <!-- Progress Bar -->
+      <div class="mt-4">
+        <div class="flex justify-between mb-1">
+          <span class="text-sm font-medium text-primary-700">Step {{ currentStep() }} of {{ totalSteps }}</span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+          <div class="bg-primary-600 h-2 rounded-full transition-all duration-500" [style.width]="(currentStep() / totalSteps * 100) + '%'"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Form Content -->
+    <div class="p-6 overflow-y-auto">
+      <form [formGroup]="wizardForm">
+        <!-- Step 1: Basic Info -->
+        <div [class.hidden]="currentStep() !== 1" [formGroupName]="'step1'" class="space-y-4 animate-fade-in">
+           <div>
+              <label for="name" class="block text-sm font-medium text-slate-700">Name</label>
+              <input type="text" id="name" formControlName="name" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="dob" class="block text-sm font-medium text-slate-700">Date of Birth</label>
+              <input type="date" id="dob" formControlName="dob" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="height" class="block text-sm font-medium text-slate-700">Height</label>
+              <input type="text" id="height" formControlName="height" placeholder="e.g., 5' 8&quot;" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="maritalStatus" class="block text-sm font-medium text-slate-700">Marital Status</label>
+              <select id="maritalStatus" formControlName="maritalStatus" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+                @for(status of maritalStatuses; track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </div>
+        </div>
+        
+        <!-- Step 2: Location & Culture -->
+        <div [class.hidden]="currentStep() !== 2" [formGroupName]="'step2'" class="space-y-4 animate-fade-in">
+            <div>
+              <label for="city" class="block text-sm font-medium text-slate-700">Current City</label>
+              <input type="text" id="city" formControlName="city" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="country" class="block text-sm font-medium text-slate-700">Current Country</label>
+              <input type="text" id="country" formControlName="country" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="religion" class="block text-sm font-medium text-slate-700">Religion</label>
+              <input type="text" id="religion" formControlName="religion" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="caste" class="block text-sm font-medium text-slate-700">Caste</label>
+              <input type="text" id="caste" formControlName="caste" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="motherTongue" class="block text-sm font-medium text-slate-700">Mother Tongue</label>
+              <input type="text" id="motherTongue" formControlName="motherTongue" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+        </div>
+
+        <!-- Step 3: Career & Education -->
+        <div [class.hidden]="currentStep() !== 3" [formGroupName]="'step3'" class="space-y-4 animate-fade-in">
+           <div>
+              <label for="career" class="block text-sm font-medium text-slate-700">Your Career / Profession</label>
+              <input type="text" id="career" formControlName="career" placeholder="e.g., Software Engineer at Google" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+            <div>
+              <label for="education" class="block text-sm font-medium text-slate-700">Highest Education</label>
+              <input type="text" id="education" formControlName="education" placeholder="e.g., MS in Computer Science, Stanford" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+            </div>
+        </div>
+
+        <!-- Step 4: About You -->
+        <div [class.hidden]="currentStep() !== 4" [formGroupName]="'step4'" class="space-y-4 animate-fade-in">
+          <div>
+            <label for="bio" class="block text-sm font-medium text-slate-700">About Yourself</label>
+            <textarea id="bio" formControlName="bio" rows="5" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200" placeholder="Tell us about your personality, values, and what you're looking for in a partner. (Min 50 characters)"></textarea>
+          </div>
+          <div>
+            <label for="interests" class="block text-sm font-medium text-slate-700">Your Interests</label>
+            <input type="text" id="interests" formControlName="interests" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200" placeholder="e.g., Hiking, Music, Cooking">
+            <p class="mt-2 text-xs text-slate-500">Separate interests with a comma.</p>
+          </div>
+        </div>
+
+        <!-- Step 5: Finish -->
+        <div [class.hidden]="currentStep() !== 5" class="text-center animate-fade-in">
+           <svg class="w-20 h-20 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 class="text-2xl font-bold text-slate-800 mt-4">You're All Set!</h3>
+          <p class="text-slate-600 mt-2 max-w-md mx-auto">Your profile is ready. Click finish to start discovering potential matches and begin your journey on Vaaradhi.</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer with Navigation -->
+    <footer class="p-6 border-t border-slate-200 flex justify-between items-center flex-shrink-0">
+      <button 
+        type="button" 
+        (click)="previousStep()"
+        [class.invisible]="currentStep() === 1"
+        class="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors duration-200">
+        Back
+      </button>
+      @if (currentStep() < totalSteps) {
+        <button 
+          type="button" 
+          (click)="nextStep()"
+          [disabled]="currentFormGroup().invalid"
+          class="inline-flex justify-center items-center rounded-md bg-primary-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+          <span>Next</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+        </button>
+      } @else {
+        <button 
+          type="button" 
+          (click)="finish()"
+          [disabled]="isSaving()"
+          class="inline-flex justify-center items-center rounded-md bg-green-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+          @if(isSaving()) {
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Saving...</span>
+          } @else {
+            <span>Finish</span>
+          }
+        </button>
+      }
+    </footer>
+  </div>
+</div>
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out forwards;
+  }
+</style>

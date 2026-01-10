@@ -106,3 +106,7 @@
 } @else {
   <router-outlet></router-outlet>
 }
+
+@if (showOnboarding()) {
+  <app-onboarding-wizard></app-onboarding-wizard>
+}

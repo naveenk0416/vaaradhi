@@ -2,6 +2,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { GoogleAuthService } from './google-auth.service';
+import { OnboardingService } from './onboarding.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { GoogleAuthService } from './google-auth.service';
 export class AuthService {
   private router = inject(Router);
   private googleAuthService = inject(GoogleAuthService);
+  private onboardingService = inject(OnboardingService);
   isLoggedIn = signal<boolean>(false);
 
   login(email: string, password: string): Promise<void> {
@@ -27,6 +29,7 @@ export class AuthService {
     return new Promise(resolve => {
       setTimeout(() => {
         this.isLoggedIn.set(true);
+        this.onboardingService.startOnboarding();
         this.router.navigate(['/discover']);
         resolve();
       }, 1000);
@@ -46,6 +49,9 @@ export class AuthService {
   async signInWithGoogle(): Promise<void> {
     await this.googleAuthService.signIn();
     this.isLoggedIn.set(true);
+    // For demo purposes, we trigger onboarding on every Google sign-in.
+    // In a real app, you would check if the user is new.
+    this.onboardingService.startOnboarding();
     this.router.navigate(['/discover']);
   }
 
