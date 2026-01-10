@@ -8,7 +8,7 @@ import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, f
 import { ProfileService } from '../../services/profile.service';
 import { AstrologyService } from '../../services/astrology.service';
 import { LocationService } from '../../services/location.service';
-import { Profile, VisaStatus, MaritalStatus } from '../../models/profile.model';
+import { Profile, VisaStatus, MaritalStatus, HousingStatus } from '../../models/profile.model';
 import { ProfileCardComponent } from '../profile-card/profile-card.component';
 
 @Component({
@@ -37,10 +37,12 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   profileForm!: FormGroup;
   visaStatuses: VisaStatus[] = ['Citizen', 'Permanent Resident', 'Work Visa', 'Student Visa'];
   maritalStatuses: MaritalStatus[] = ['Never Married', 'Divorced', 'Widowed', 'Annulled'];
+  housingStatuses: HousingStatus[] = ['Owns House', 'Rents', 'Lives with Family'];
   isSaving = signal(false);
   
   // Photo upload state
   isUploadingPhoto = signal(false);
+  uploadProgress = signal(0);
   photoUploadError = signal<string | null>(null);
 
   // Autocomplete signals
@@ -60,6 +62,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
       age: [null, [Validators.required, Validators.min(18)]],
       height: ['', Validators.required],
       maritalStatus: [null, Validators.required],
+      housingStatus: [null, Validators.required],
       dob: ['', Validators.required],
       placeOfBirth: ['', Validators.required],
       timeOfBirth: ['', Validators.required],
@@ -107,6 +110,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
       age: user.age,
       height: user.height,
       maritalStatus: user.maritalStatus,
+      housingStatus: user.housingStatus,
       dob: user.dob,
       placeOfBirth: user.placeOfBirth,
       timeOfBirth: user.timeOfBirth,
@@ -207,6 +211,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         age: formValue.age,
         height: formValue.height,
         maritalStatus: formValue.maritalStatus,
+        housingStatus: formValue.housingStatus,
         dob: formValue.dob,
         placeOfBirth: formValue.placeOfBirth,
         timeOfBirth: formValue.timeOfBirth,
@@ -240,14 +245,11 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
 
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if (!input.files?.length) {
-      return;
-    }
+    if (!input.files?.length) return;
 
     const file = input.files[0];
     this.photoUploadError.set(null);
 
-    // --- Validation ---
     if (!file.type.startsWith('image/')) {
       this.photoUploadError.set('Please select a valid image file (e.g., JPG, PNG).');
       input.value = '';
@@ -262,10 +264,11 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     }
 
     this.isUploadingPhoto.set(true);
+    this.uploadProgress.set(0);
 
     try {
       const base64String = await this.readFileAsDataURL(file);
-      await this.simulateUpload();
+      await this.simulateUploadWithProgress();
 
       const updatedProfile: Profile = {
         ...this.currentUser(),
@@ -276,11 +279,17 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         },
       };
       this.profileService.updateCurrentUser(updatedProfile);
+      
+      // Keep the 100% progress bar visible for a moment before hiding
+      setTimeout(() => {
+        this.isUploadingPhoto.set(false);
+      }, 500);
+
     } catch (error) {
       this.photoUploadError.set(typeof error === 'string' ? error : 'An unknown error occurred.');
+      this.isUploadingPhoto.set(false); // Hide progress bar on error
     } finally {
-      this.isUploadingPhoto.set(false);
-      input.value = '';
+      input.value = ''; // Clear the input regardless of outcome
     }
   }
 
@@ -293,14 +302,27 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     });
   }
 
-  private simulateUpload(): Promise<void> {
+  private simulateUploadWithProgress(): Promise<void> {
     return new Promise((resolve, reject) => {
+      this.uploadProgress.set(0);
+      const interval = setInterval(() => {
+        this.uploadProgress.update(p => {
+          const newProgress = p + 10;
+          if (newProgress >= 90) {
+            clearInterval(interval);
+          }
+          return newProgress;
+        });
+      }, 120);
+
       setTimeout(() => {
-        // Simulate a 20% chance of failure for demonstration
-        if (Math.random() < 0.2) {
+        clearInterval(interval);
+        if (Math.random() < 0.2) { // Simulate 20% failure rate
+          this.uploadProgress.set(0);
           reject('Upload failed. Please check your connection and try again.');
         } else {
-          resolve();
+          this.uploadProgress.set(100);
+          setTimeout(() => resolve(), 300);
         }
       }, 1500);
     });

@@ -1,6 +1,7 @@
 
 import { Component, ChangeDetectionStrategy, signal, inject, computed, viewChild, ElementRef, effect, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Profile } from '../../models/profile.model';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../services/notification.service';
@@ -18,7 +19,7 @@ interface Banner {
 @Component({
   selector: 'app-discover-page',
   templateUrl: './discover-page.component.html',
-  imports: [CommonModule, ProfileCardComponent, DetailedProfileComponent, KundaliScoreComponent],
+  imports: [CommonModule, ProfileCardComponent, DetailedProfileComponent, KundaliScoreComponent, RouterLink],
 })
 export class DiscoverPageComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
@@ -70,20 +71,29 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
     return this.featuredProfiles().slice(this.currentIndex(), this.currentIndex() + 3).reverse();
   });
 
-  // --- Horizontal Carousel State ---
-  indiaProfilesContainer = viewChild<ElementRef<HTMLDivElement>>('indiaProfilesContainer');
+  // --- Horizontal Carousel States ---
+  indiaProfilesContainer = viewChild<ElementRef<HTMLUListElement>>('indiaProfilesContainer');
   canScrollLeft = signal(false);
   canScrollRight = signal(false);
+
+  featuredProfilesContainer = viewChild<ElementRef<HTMLUListElement>>('featuredProfilesContainer');
+  canScrollFeaturedLeft = signal(false);
+  canScrollFeaturedRight = signal(false);
   
   constructor() {
     effect(() => {
-      // Re-run this effect when profilesFromIndia changes.
+      // Re-run this effect when profiles change to update scroll button visibility.
       this.profilesFromIndia();
+      this.featuredProfiles();
 
-      const container = this.indiaProfilesContainer()?.nativeElement;
-      if (container) {
-          // Use a timeout to allow the DOM to update with the new profiles
+      const indiaContainer = this.indiaProfilesContainer()?.nativeElement;
+      if (indiaContainer) {
           setTimeout(() => this.checkScrollButtons(), 100);
+      }
+      
+      const featuredContainer = this.featuredProfilesContainer()?.nativeElement;
+      if (featuredContainer) {
+          setTimeout(() => this.checkFeaturedScrollButtons(), 100);
       }
     });
 
@@ -201,10 +211,30 @@ export class DiscoverPageComponent implements OnInit, OnDestroy {
     if (!container) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = container;
-
-    // Use a small tolerance to handle floating point inaccuracies
     const tolerance = 2;
     this.canScrollLeft.set(scrollLeft > tolerance);
     this.canScrollRight.set(scrollLeft < scrollWidth - clientWidth - tolerance);
+  }
+
+  scrollFeaturedProfiles(direction: 'left' | 'right') {
+    const container = this.featuredProfilesContainer()?.nativeElement;
+    if (!container) return;
+    
+    const scrollAmount = container.clientWidth * 0.9;
+    
+    container.scrollBy({ 
+      left: direction === 'left' ? -scrollAmount : scrollAmount, 
+      behavior: 'smooth' 
+    });
+  }
+
+  checkFeaturedScrollButtons() {
+    const container = this.featuredProfilesContainer()?.nativeElement;
+    if (!container) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    const tolerance = 2;
+    this.canScrollFeaturedLeft.set(scrollLeft > tolerance);
+    this.canScrollFeaturedRight.set(scrollLeft < scrollWidth - clientWidth - tolerance);
   }
 }

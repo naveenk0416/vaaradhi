@@ -34,6 +34,7 @@ export class ProfileService {
       rashi: 'Simha (Leo)',
       nakshatra: 'Magha',
       userCategory: 'NRI',
+      housingStatus: 'Rents',
       preferences: {
         willingToRelocate: false,
         preferredCountries: []
@@ -65,6 +66,7 @@ export class ProfileService {
       rashi: 'Meena (Pisces)',
       nakshatra: 'Revati',
       userCategory: 'NRI',
+      housingStatus: 'Owns House',
       preferences: {
         willingToRelocate: true,
         preferredCountries: ['USA', 'Canada']
@@ -96,6 +98,7 @@ export class ProfileService {
       rashi: 'Makara (Capricorn)',
       nakshatra: 'Shravana',
       userCategory: 'NRI',
+      housingStatus: 'Owns House',
       preferences: {
         willingToRelocate: true,
         preferredCountries: ['USA', 'UK']
@@ -127,6 +130,7 @@ export class ProfileService {
       rashi: 'Vrishchika (Scorpio)',
       nakshatra: 'Jyeshtha',
       userCategory: 'NRI',
+      housingStatus: 'Rents',
       preferences: {
         willingToRelocate: false,
         preferredCountries: []
@@ -158,6 +162,7 @@ export class ProfileService {
       rashi: 'Karka (Cancer)',
       nakshatra: 'Ashlesha',
       userCategory: 'NRI',
+      housingStatus: 'Owns House',
       preferences: {
         willingToRelocate: false,
         preferredCountries: []
@@ -189,6 +194,7 @@ export class ProfileService {
       rashi: 'Kumbha (Aquarius)',
       nakshatra: 'Shatabhisha',
       userCategory: 'NRI',
+      housingStatus: 'Rents',
       preferences: {
         willingToRelocate: true,
         preferredCountries: ['Australia', 'USA', 'New Zealand']
@@ -220,6 +226,7 @@ export class ProfileService {
       rashi: 'Karka (Cancer)',
       nakshatra: 'Punarvasu',
       userCategory: 'INDIA',
+      housingStatus: 'Lives with Family',
       preferences: {
         willingToRelocate: true,
         preferredCountries: ['USA', 'UK']
@@ -251,6 +258,7 @@ export class ProfileService {
       rashi: 'Simha (Leo)',
       nakshatra: 'Purva Phalguni',
       userCategory: 'INDIA',
+      housingStatus: 'Owns House',
       preferences: {
         willingToRelocate: false,
         preferredCountries: []
@@ -282,6 +290,7 @@ export class ProfileService {
       rashi: 'Mesha (Aries)',
       nakshatra: 'Bharani',
       userCategory: 'INDIA',
+      housingStatus: 'Rents',
       preferences: {
         willingToRelocate: true,
         preferredCountries: ['Canada', 'Germany']
@@ -313,6 +322,7 @@ export class ProfileService {
       rashi: 'Dhanu (Sagittarius)',
       nakshatra: 'Mula',
       userCategory: 'INDIA',
+      housingStatus: 'Owns House',
       preferences: {
         willingToRelocate: false,
         preferredCountries: []
@@ -344,6 +354,7 @@ export class ProfileService {
       rashi: 'Tula (Libra)',
       nakshatra: 'Swati',
       userCategory: 'INDIA',
+      housingStatus: 'Lives with Family',
       preferences: {
         willingToRelocate: true,
         preferredCountries: ['Australia', 'New Zealand']

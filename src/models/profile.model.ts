@@ -2,6 +2,7 @@
 export type VisaStatus = 'Citizen' | 'Permanent Resident' | 'Work Visa' | 'Student Visa';
 export type MaritalStatus = 'Never Married' | 'Divorced' | 'Widowed' | 'Annulled';
 export type UserCategory = 'INDIA' | 'NRI';
+export type HousingStatus = 'Owns House' | 'Rents' | 'Lives with Family';
 
 export interface Profile {
   id: number;
@@ -33,6 +34,7 @@ export interface Profile {
   rashi: string;
   nakshatra: string;
   userCategory: UserCategory;
+  housingStatus: HousingStatus;
   preferences: {
     willingToRelocate: boolean;
     preferredCountries: string[];
