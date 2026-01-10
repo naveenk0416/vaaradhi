@@ -10,11 +10,15 @@ import {
   timer,
 } from "rxjs";
 import { environment } from "../../environments/environment"; // Import here
+
+import { GoogleAuthService } from './google-auth.service';
+
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
   private router = inject(Router);
+  private googleAuthService = inject(GoogleAuthService);
   isLoggedIn = signal<boolean>(false);
   private http = inject(HttpClient);
   private apiUrl = `${environment.baseUrl}/api/auth`;
@@ -57,6 +61,12 @@ export class AuthService {
         resolve();
       }, 1000);
     });
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    await this.googleAuthService.signIn();
+    this.isLoggedIn.set(true);
+    this.router.navigate(['/discover']);
   }
 
   logout(): void {

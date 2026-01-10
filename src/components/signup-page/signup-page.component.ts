@@ -62,5 +62,16 @@ export class SignupPageComponent {
   }
 
 
+  async handleGoogleSignUp(): Promise<void> {
+    this.isSubmitting.set(true);
+    this.signupError.set(null);
+    try {
+      await this.authService.signInWithGoogle();
+    } catch (error) {
+      this.signupError.set('Could not sign up with Google. Please try again.');
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
 }
 

@@ -21,6 +21,19 @@ export class ProfileService {
   discoverableProfiles = computed(() => this.allProfiles().slice(1));
 
   likedProfiles = signal<Profile[]>([]);
+  
+  // --- Profile Sharing State ---
+  private profilesSharedToday = signal<number>(0);
+  private readonly MAX_SHARES_PER_DAY = 5;
+
+  canShareProfile = computed(() => this.profilesSharedToday() < this.MAX_SHARES_PER_DAY);
+  getSharesLeft = computed(() => this.MAX_SHARES_PER_DAY - this.profilesSharedToday());
+  
+  incrementShares(): void {
+    if (this.canShareProfile()) {
+      this.profilesSharedToday.update(count => count + 1);
+    }
+  }
 
   // --- User-facing Methods ---
   
