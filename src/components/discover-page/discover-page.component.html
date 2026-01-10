@@ -86,34 +86,50 @@
       }
     </div>
 
-    <!-- Desktop Grid View -->
+    <!-- Desktop Carousel View -->
     <div class="hidden md:block">
       @if (featuredProfiles().length > 0) {
-          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              @for(profile of featuredProfiles(); track profile.id) {
-                  <div (click)="viewProfile(profile)" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden group transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                      <div class="relative h-64">
-                          <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover">
-                          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                           @if(kundaliScores().get(profile.id); as match) {
-                            <div class="absolute top-3 left-3">
-                              <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
-                            </div>
-                           }
-                          <div class="absolute bottom-0 left-0 p-4 text-white">
-                              <h3 class="font-bold text-xl">{{ profile.name }}, {{ profile.age }}</h3>
-                              <p class="text-sm">{{ profile.city }}, {{ profile.country }}</p>
+          <div class="relative group" role="region" aria-label="Featured NRI Profiles">
+              <ul #featuredProfilesContainer (scroll)="checkFeaturedScrollButtons()" class="flex overflow-x-auto space-x-6 pb-4 scrollbar-hide -mx-2 px-2" style="scroll-snap-type: x mandatory;">
+                  @for(profile of featuredProfiles(); track profile.id) {
+                      <li class="flex-shrink-0 w-full md:w-[calc(50%_-_12px)] xl:w-[calc(33.333%_-_16px)]" style="scroll-snap-align: start;">
+                          <div (click)="viewProfile(profile)" class="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden group transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300 h-full">
+                              <div class="relative h-64">
+                                  <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover">
+                                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                  @if(kundaliScores().get(profile.id); as match) {
+                                      <div class="absolute top-3 left-3">
+                                          <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+                                      </div>
+                                  }
+                                  <div class="absolute bottom-0 left-0 p-4 text-white">
+                                      <h3 class="font-bold text-xl">{{ profile.name }}, {{ profile.age }}</h3>
+                                      <p class="text-sm">{{ profile.city }}, {{ profile.country }}</p>
+                                  </div>
+                              </div>
+                              <div class="p-4">
+                                  <p class="text-sm text-slate-600 line-clamp-2 h-10">{{ profile.bio }}</p>
+                                  <div class="flex flex-wrap gap-2 mt-3">
+                                      @for(interest of profile.interests.slice(0, 3); track interest) {
+                                          <span class="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded-full">{{ interest }}</span>
+                                      }
+                                  </div>
+                              </div>
                           </div>
-                      </div>
-                      <div class="p-4">
-                          <p class="text-sm text-slate-600 line-clamp-2 h-10">{{ profile.bio }}</p>
-                          <div class="flex flex-wrap gap-2 mt-3">
-                              @for(interest of profile.interests.slice(0, 3); track interest) {
-                                  <span class="bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded-full">{{ interest }}</span>
-                              }
-                          </div>
-                      </div>
-                  </div>
+                      </li>
+                  }
+              </ul>
+
+              <!-- Carousel Controls -->
+              @if (canScrollFeaturedLeft()) {
+                  <button (click)="scrollFeaturedProfiles('left')" aria-label="Scroll to previous profiles" class="absolute top-1/2 left-0 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                  </button>
+              }
+              @if (canScrollFeaturedRight()) {
+                  <button (click)="scrollFeaturedProfiles('right')" aria-label="Scroll to next profiles" class="absolute top-1/2 right-0 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                  </button>
               }
           </div>
       } @else {
@@ -125,53 +141,80 @@
     </div>
   </div>
 
-  <!-- Profiles from India Section -->
-  <div class="mt-10 flex-shrink-0">
-    <h2 id="profiles-from-india-heading" class="text-2xl font-bold text-slate-800 mb-4 px-2 md:px-0">Profiles from India</h2>
-    @if(profilesFromIndia().length > 0) {
-      <div class="relative group" role="region" aria-labelledby="profiles-from-india-heading">
-        <ul #indiaProfilesContainer (scroll)="checkScrollButtons()" class="flex overflow-x-auto space-x-4 pb-4 -mx-4 md:-mx-6 px-4 md:px-6 scrollbar-hide" style="scroll-snap-type: x mandatory;">
-          @for(profile of profilesFromIndia(); track profile.id) {
-            <li class="flex-shrink-0" style="scroll-snap-align: start;">
-              <div (click)="viewProfile(profile)" class="relative w-48 h-64 rounded-xl overflow-hidden shadow-lg cursor-pointer group/card transition-all duration-300 hover:shadow-xl hover:shadow-primary-200/50">
-                <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                 @if(kundaliScores().get(profile.id); as match) {
-                  <div class="absolute top-2 left-2">
-                    <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+  <!-- Profiles from India & Quick Filters Section -->
+  <div class="mt-10 flex-shrink-0 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div>
+      <h2 id="profiles-from-india-heading" class="text-2xl font-bold text-slate-800 mb-4 px-2 md:px-0">Profiles from India</h2>
+      @if(profilesFromIndia().length > 0) {
+        <div class="relative group" role="region" aria-labelledby="profiles-from-india-heading">
+          <ul #indiaProfilesContainer (scroll)="checkScrollButtons()" class="flex overflow-x-auto space-x-4 pb-4 -mx-4 md:-mx-0 px-4 md:px-0 scrollbar-hide" style="scroll-snap-type: x mandatory;">
+            @for(profile of profilesFromIndia(); track profile.id) {
+              <li class="flex-shrink-0" style="scroll-snap-align: start;">
+                <div (click)="viewProfile(profile)" class="relative w-48 h-64 rounded-xl overflow-hidden shadow-lg cursor-pointer group/card transition-all duration-300 hover:shadow-xl hover:shadow-primary-200/50">
+                  <img [src]="profile.imageUrls[0]" [alt]="profile.name" class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                   @if(kundaliScores().get(profile.id); as match) {
+                    <div class="absolute top-2 left-2">
+                      <app-kundali-score [score]="match.score" [summary]="match.summary" size="small"></app-kundali-score>
+                    </div>
+                   }
+                  <div class="absolute bottom-0 left-0 p-3 text-white w-full">
+                    <div class="flex items-center">
+                      <p class="font-bold text-base truncate">{{ profile.name }}, {{ profile.age }}</p>
+                      @if(profile.verification.isIdVerified) {
+                        <svg title="ID Verified" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5 text-blue-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a.75.75 0 00-1.06-1.06L9 10.94l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clip-rule="evenodd" />
+                        </svg>
+                      }
+                    </div>
+                    <p class="text-xs text-slate-200">{{ profile.city }}</p>
                   </div>
-                 }
-                <div class="absolute bottom-0 left-0 p-3 text-white w-full">
-                  <div class="flex items-center">
-                    <p class="font-bold text-base truncate">{{ profile.name }}, {{ profile.age }}</p>
-                    @if(profile.verification.isIdVerified) {
-                      <svg title="ID Verified" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5 text-blue-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a.75.75 0 00-1.06-1.06L9 10.94l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clip-rule="evenodd" />
-                      </svg>
-                    }
-                  </div>
-                  <p class="text-xs text-slate-200">{{ profile.city }}</p>
                 </div>
-              </div>
-            </li>
-          }
-        </ul>
+              </li>
+            }
+          </ul>
 
-        <!-- Carousel Controls -->
-        @if (canScrollLeft()) {
-            <button (click)="scrollIndiaProfiles('left')" aria-label="Scroll to previous profiles" class="absolute top-1/2 left-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-        }
-        @if (canScrollRight()) {
-            <button (click)="scrollIndiaProfiles('right')" aria-label="Scroll to next profiles" class="absolute top-1/2 right-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-            </button>
-        }
+          <!-- Carousel Controls -->
+          @if (canScrollLeft()) {
+              <button (click)="scrollIndiaProfiles('left')" aria-label="Scroll to previous profiles" class="absolute top-1/2 left-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+          }
+          @if (canScrollRight()) {
+              <button (click)="scrollIndiaProfiles('right')" aria-label="Scroll to next profiles" class="absolute top-1/2 right-2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100 disabled:opacity-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              </button>
+          }
+        </div>
+      } @else {
+        <p class="text-slate-500 px-2 md:px-0">No profiles from India to show right now.</p>
+      }
+    </div>
+    <div class="mt-8 lg:mt-0">
+      <h2 class="text-2xl font-bold text-slate-800 mb-4 px-2 md:px-0">Quick Filters</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Nearby -->
+        <a [routerLink]="['/search']" [queryParams]="{filter: 'nearby'}" class="group relative flex flex-col justify-between p-4 rounded-xl overflow-hidden bg-blue-500 text-white h-32 hover:scale-105 transition-transform duration-300">
+          <h3 class="font-bold text-lg">Nearby</h3>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 absolute -bottom-4 -right-4 text-white/20 transform group-hover:rotate-12 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+        </a>
+        <!-- Horoscope -->
+        <a [routerLink]="['/search']" [queryParams]="{filter: 'horoscope'}" class="group relative flex flex-col justify-between p-4 rounded-xl overflow-hidden bg-purple-500 text-white h-32 hover:scale-105 transition-transform duration-300">
+          <h3 class="font-bold text-lg">Matching Horoscopes</h3>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 absolute -bottom-4 -right-4 text-white/20 transform group-hover:rotate-12 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+        </a>
+        <!-- Relocate -->
+        <a [routerLink]="['/search']" [queryParams]="{filter: 'relocate'}" class="group relative flex flex-col justify-between p-4 rounded-xl overflow-hidden bg-teal-500 text-white h-32 hover:scale-105 transition-transform duration-300">
+          <h3 class="font-bold text-lg">Willing to Relocate</h3>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 absolute -bottom-4 -right-4 text-white/20 transform group-hover:rotate-12 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.997 5.997 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v1.5a1.5 1.5 0 01-1.5 1.5c-.526 0-.988-.27-1.268-.668a6.034 6.034 0 01-1.912 2.706C6.512 14.27 6.974 14 7.5 14A1.5 1.5 0 019 12.5V12a2 2 0 00-4 0 2 2 0 01-1.523 1.943A5.997 5.997 0 014 10c0-.34.028-.675.083-1H5a2 2 0 002-2V5.5A1.5 1.5 0 018.5 4c.526 0 .988.27 1.268.668A6.034 6.034 0 0111.668 2a6.01 6.01 0 012.706 1.912 6.032 6.032 0 01.332 1.353V8a2 2 0 00-2 2 2 2 0 01-1.943 1.523A5.997 5.997 0 0110 16c-.34 0-.675-.028-1-.083V15a2 2 0 00-2-2 2 2 0 01-1.943-1.523A5.997 5.997 0 016 4c.34 0 .675.028 1 .083V5a2 2 0 002 2 2 2 0 011.943 1.523A5.997 5.997 0 0114 16c-.34 0-.675-.028-1-.083V15a2 2 0 00-2-2 2 2 0 01-1.943-1.523A5.997 5.997 0 016 4c.34 0 .675.028 1 .083v.917a2 2 0 002 2 2 2 0 011.943 1.523A6.012 6.012 0 014.332 8.027z" clip-rule="evenodd" /></svg>
+        </a>
+        <!-- Own House -->
+        <a [routerLink]="['/search']" [queryParams]="{filter: 'own_house'}" class="group relative flex flex-col justify-between p-4 rounded-xl overflow-hidden bg-amber-500 text-white h-32 hover:scale-105 transition-transform duration-300">
+          <h3 class="font-bold text-lg">Owns House</h3>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 absolute -bottom-4 -right-4 text-white/20 transform group-hover:rotate-12 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+        </a>
       </div>
-    } @else {
-      <p class="text-slate-500 px-2 md:px-0">No profiles from India to show right now.</p>
-    }
+    </div>
   </div>
 </main>
 

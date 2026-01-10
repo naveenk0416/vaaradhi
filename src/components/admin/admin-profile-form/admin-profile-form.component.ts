@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ProfileService } from '../../../services/profile.service';
 import { AstrologyService } from '../../../services/astrology.service';
-import { Profile, VisaStatus, MaritalStatus, UserCategory } from '../../../models/profile.model';
+import { Profile, VisaStatus, MaritalStatus, UserCategory, HousingStatus } from '../../../models/profile.model';
 
 @Component({
   selector: 'app-admin-profile-form',
@@ -28,6 +28,7 @@ export class AdminProfileFormComponent implements OnInit {
   visaStatuses: VisaStatus[] = ['Citizen', 'Permanent Resident', 'Work Visa', 'Student Visa'];
   maritalStatuses: MaritalStatus[] = ['Never Married', 'Divorced', 'Widowed', 'Annulled'];
   userCategories: UserCategory[] = ['INDIA', 'NRI'];
+  housingStatuses: HousingStatus[] = ['Owns House', 'Rents', 'Lives with Family'];
 
   ngOnInit(): void {
     this.profileForm = this.fb.group({
@@ -37,6 +38,7 @@ export class AdminProfileFormComponent implements OnInit {
       age: [null, [Validators.required, Validators.min(18)]],
       height: ['', Validators.required],
       maritalStatus: ['Never Married', Validators.required],
+      housingStatus: ['Rents', Validators.required],
       dob: ['', Validators.required],
       placeOfBirth: ['', Validators.required],
       timeOfBirth: ['', Validators.required],
@@ -81,6 +83,7 @@ export class AdminProfileFormComponent implements OnInit {
       age: profile.age,
       height: profile.height,
       maritalStatus: profile.maritalStatus,
+      housingStatus: profile.housingStatus,
       dob: profile.dob,
       placeOfBirth: profile.placeOfBirth,
       timeOfBirth: profile.timeOfBirth,
@@ -138,6 +141,7 @@ export class AdminProfileFormComponent implements OnInit {
       career: formValue.career,
       education: formValue.education,
       maritalStatus: formValue.maritalStatus,
+      housingStatus: formValue.housingStatus,
       religion: formValue.religion,
       caste: formValue.caste,
       motherTongue: formValue.motherTongue,

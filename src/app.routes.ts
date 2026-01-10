@@ -8,6 +8,7 @@ import { SignupPageComponent } from './components/signup-page/signup-page.compon
 import { ForgotPasswordPageComponent } from './components/forgot-password-page/forgot-password-page.component';
 import { ChatPageComponent } from './components/chat-page/chat-page.component';
 import { InterestedPageComponent } from './components/interested-page/interested-page.component';
+import { PaymentPageComponent } from './components/payment-page/payment-page.component';
 import { AdminLayoutComponent } from './components/admin/admin-layout/admin-layout.component';
 import { AdminLoginPageComponent } from './components/admin/admin-login-page/admin-login-page.component';
 import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'profile/edit', component: ProfilePageComponent },
   { path: 'search', component: SearchPageComponent },
   { path: 'chat', component: ChatPageComponent },
+  { path: 'payment', component: PaymentPageComponent },
   
   // Admin routes
   { path: 'admin/login', component: AdminLoginPageComponent },

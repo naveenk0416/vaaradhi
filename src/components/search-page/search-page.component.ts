@@ -2,10 +2,11 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed, effect } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { NotificationService } from '../../services/notification.service';
 import { KundaliService, KundaliMatch } from '../../services/kundali.service';
-import { Profile } from '../../models/profile.model';
+import { Profile, HousingStatus } from '../../models/profile.model';
 import { DetailedProfileComponent } from '../detailed-profile/detailed-profile.component';
 import { KundaliScoreComponent } from '../kundali-score/kundali-score.component';
 
@@ -25,10 +26,13 @@ export class SearchPageComponent implements OnInit {
   private profileService = inject(ProfileService);
   private notificationService = inject(NotificationService);
   private kundaliService = inject(KundaliService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   searchForm!: FormGroup;
   isProfessionalInfoOpen = signal(true);
   isLocationInfoOpen = signal(true);
+  housingStatuses: HousingStatus[] = ['Owns House', 'Rents', 'Lives with Family'];
   
   private currentUser = this.profileService.currentUser;
   private allSearchableProfiles = computed(() => {
@@ -37,6 +41,7 @@ export class SearchPageComponent implements OnInit {
     return all.filter((p, i, self) => i === self.findIndex(t => t.id === p.id));
   });
 
+  private horoscopeFilteredIds = signal<Set<number> | null>(null);
   filteredProfiles = signal<Profile[]>([]);
   selectedProfile = signal<Profile | null>(null);
 
@@ -76,11 +81,20 @@ export class SearchPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({
+      country: [''],
       career: [''],
       education: [''],
       interests: [''],
       willingToRelocate: [false],
       preferredCountries: [{ value: '', disabled: true }],
+      housingStatus: [''],
+    });
+
+    this.route.queryParams.subscribe(params => {
+      const filter = params['filter'];
+      if (filter) {
+        this.applyPreFilter(filter);
+      }
     });
 
     this.applyFilters(); // Initial application
@@ -95,12 +109,74 @@ export class SearchPageComponent implements OnInit {
       }
     });
 
-    this.searchForm.valueChanges.subscribe(() => this.applyFilters());
+    this.searchForm.valueChanges.subscribe(() => {
+        // When user interacts with form, clear horoscope pre-filter
+        if(this.horoscopeFilteredIds()) {
+            this.horoscopeFilteredIds.set(null);
+        }
+        this.applyFilters();
+    });
+  }
+
+  applyPreFilter(filter: string): void {
+    this.horoscopeFilteredIds.set(null); // Clear previous horoscope filter
+    this.resetFilters();
+
+    if (filter === 'horoscope') {
+      this.filterByHoroscope();
+    } else {
+      switch (filter) {
+        case 'nearby':
+          this.searchForm.patchValue({ country: this.currentUser().country });
+          break;
+        case 'relocate':
+          this.searchForm.patchValue({ willingToRelocate: true });
+          break;
+        case 'own_house':
+          this.searchForm.patchValue({ housingStatus: 'Owns House' });
+          break;
+      }
+    }
+    
+    // Clean up URL
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      replaceUrl: true
+    });
+  }
+
+  async filterByHoroscope(): Promise<void> {
+    this.isLoadingScores.set(true);
+    const user = this.currentUser();
+    const profilesToScore = this.allSearchableProfiles();
+    
+    const scorePromises = profilesToScore.map(p => 
+        this.kundaliService.getMatchScore(user, p).then(score => ({ profile: p, score }))
+    );
+    
+    const results = await Promise.all(scorePromises);
+    
+    const highlyMatchedProfileIds = new Set(results
+      .filter(r => r.score.score > 24)
+      .map(r => r.profile.id));
+
+    this.horoscopeFilteredIds.set(highlyMatchedProfileIds);
+    this.applyFilters(); // Re-run filters with the new horoscope IDs
   }
 
   applyFilters(): void {
     const filters = this.searchForm.value;
     let profiles = this.allSearchableProfiles();
+    
+    const horoscopeIds = this.horoscopeFilteredIds();
+    if (horoscopeIds) {
+      profiles = profiles.filter(p => horoscopeIds.has(p.id));
+    }
+
+    if (filters.country) {
+      profiles = profiles.filter(p => p.country.toLowerCase().includes(filters.country.toLowerCase()));
+    }
 
     if (filters.career) {
       profiles = profiles.filter(p => p.career.toLowerCase().includes(filters.career.toLowerCase()));
@@ -119,6 +195,10 @@ export class SearchPageComponent implements OnInit {
           )
         );
       }
+    }
+    
+    if (filters.housingStatus) {
+      profiles = profiles.filter(p => p.housingStatus === filters.housingStatus);
     }
 
     if (filters.willingToRelocate) {
@@ -140,14 +220,16 @@ export class SearchPageComponent implements OnInit {
   }
 
   resetFilters(): void {
+    this.horoscopeFilteredIds.set(null);
     this.searchForm.reset({
+      country: '',
       career: '',
       education: '',
       interests: '',
       willingToRelocate: false,
       preferredCountries: { value: '', disabled: true },
+      housingStatus: '',
     });
-    // This will trigger valueChanges and re-apply filters with empty values
   }
   
   viewProfile(profile: Profile): void {

@@ -18,11 +18,12 @@
               }
               <button type="button" (click)="fileInput.click()" [disabled]="isUploadingPhoto()" class="aspect-square rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:border-primary-500 hover:text-primary-500 transition-colors disabled:cursor-wait disabled:bg-slate-50 disabled:border-slate-200 disabled:text-slate-400">
                 @if (isUploadingPhoto()) {
-                  <svg class="animate-spin h-8 w-8 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span class="text-xs mt-1 font-semibold">Uploading...</span>
+                  <div class="w-full px-4 flex flex-col items-center">
+                    <div class="w-full bg-slate-200 rounded-full h-2">
+                      <div class="bg-primary-600 h-2 rounded-full transition-all duration-300" [style.width]="uploadProgress() + '%'"></div>
+                    </div>
+                    <span class="text-xs mt-2 font-semibold text-slate-500">{{ uploadProgress() }}%</span>
+                  </div>
                 } @else {
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                   <span class="text-xs mt-1 font-semibold">Add Photo</span>
@@ -55,6 +56,14 @@
               <label for="maritalStatus" class="block text-sm font-medium text-slate-700">Marital Status</label>
               <select id="maritalStatus" formControlName="maritalStatus" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
                 @for(status of maritalStatuses; track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label for="housingStatus" class="block text-sm font-medium text-slate-700">Housing Status</label>
+              <select id="housingStatus" formControlName="housingStatus" class="mt-1 block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition placeholder:text-slate-400 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
+                @for(status of housingStatuses; track status) {
                   <option [value]="status">{{ status }}</option>
                 }
               </select>
@@ -265,6 +274,7 @@
                     <h4 class="font-semibold text-slate-500 text-sm uppercase tracking-wider">Basic Info</h4>
                     <p class="text-slate-700"><strong class="font-medium text-slate-800">Height:</strong> {{ user.height }}</p>
                     <p class="text-slate-700"><strong class="font-medium text-slate-800">Marital Status:</strong> {{ user.maritalStatus }}</p>
+                    <p class="text-slate-700"><strong class="font-medium text-slate-800">Housing:</strong> {{ user.housingStatus }}</p>
                     <p class="text-slate-700"><strong class="font-medium text-slate-800">Birth Details:</strong> {{ user.placeOfBirth }} at {{ user.timeOfBirth }}</p>
                   </div>
                   <!-- Cultural Info -->
